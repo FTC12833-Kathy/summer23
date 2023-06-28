@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
 
 public class S2_Lift {
-    private LinearOpMode opMode;
+    private final LinearOpMode opMode;
     private DcMotor liftMotor = null;
     private Servo pivot = null;
     private DigitalChannel bottomLimit;
@@ -21,13 +21,20 @@ public class S2_Lift {
     public void runLift() {
 //        while (opMode && )
 //        code to run lift mechanism
-        if (opMode.gamepad2.right_trigger > 0.1){
+
+        opMode.telemetry.addData("Limit", isTriggered(bottomLimit));
+
+        if (opMode.gamepad2.right_trigger > 0.1){ //up
             liftMotor.setPower(LIFT_SPEED);
-        } else if (opMode.gamepad2.left_trigger > 0.1) {
+        } else if (opMode.gamepad2.left_trigger > 0.1 && !isTriggered(bottomLimit)) { //down
             liftMotor.setPower(-LIFT_SPEED);
         } else {
             liftMotor.setPower(0);
         }
+    }
+
+    public boolean isTriggered(DigitalChannel limit) {
+        return !limit.getState();
     }
 
     private void init() {

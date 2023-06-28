@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 public class S2_Drivetrain {
-    private LinearOpMode opMode;
+    private final LinearOpMode opMode;
     
     private DcMotor backLeftMotor = null;
     private DcMotor backRightMotor = null;
@@ -18,8 +18,6 @@ public class S2_Drivetrain {
 
     private boolean halfSpeed = false;
     private boolean isHandled = false;
-
-    private double max = 1;
 
     public S2_Drivetrain(LinearOpMode opMode) {
         this.opMode = opMode;
@@ -36,27 +34,32 @@ public class S2_Drivetrain {
         blMotorPower = (drive + turn - strafe);
         brMotorPower = (drive - turn + strafe);
 
-        if (Math.abs(drive) + Math.abs(turn) + Math.abs(strafe) > 1) {
-            max = Math.abs(drive) + Math.abs(turn) + Math.abs(strafe);
+        double max = 1;
+        double totalStickValues = Math.abs(drive) + Math.abs(turn) + Math.abs(strafe);
+
+        if (totalStickValues > 1) {
+            max = totalStickValues;
             flMotorPower = flMotorPower / max;
             frMotorPower = frMotorPower / max;
             blMotorPower = blMotorPower / max;
             brMotorPower = brMotorPower / max;
         }
 
-//        if (opMode.gamepad1.a && !isHandled) {
-//            halfSpeed = !halfSpeed;
-//            isHandled = true;
-//        } else if (!opMode.gamepad1.a) {
-//            isHandled = false;
-//        }
-//
-//        if (halfSpeed) {
-//            flMotorPower = flMotorPower / 2;
-//            frMotorPower = frMotorPower / 2;
-//            blMotorPower = blMotorPower / 2;
-//            brMotorPower = brMotorPower / 2;
-//        }
+/*
+        if (opMode.gamepad1.a && !isHandled) {
+            halfSpeed = !halfSpeed;
+            isHandled = true;
+        } else if (!opMode.gamepad1.a) {
+            isHandled = false;
+        }
+
+        if (halfSpeed) {
+            flMotorPower = flMotorPower / 2;
+            frMotorPower = frMotorPower / 2;
+            blMotorPower = blMotorPower / 2;
+            brMotorPower = brMotorPower / 2;
+        }
+*/
 
         frontLeftMotor.setPower(flMotorPower);
         frontRightMotor.setPower(frMotorPower);
@@ -64,6 +67,7 @@ public class S2_Drivetrain {
         backRightMotor.setPower(brMotorPower);
         max = 1;
 
+/*
         opMode.telemetry.addData("drive", drive);
         opMode.telemetry.addData("strafe", strafe);
         opMode.telemetry.addData("turn", turn);
@@ -72,8 +76,7 @@ public class S2_Drivetrain {
         opMode.telemetry.addData("fr power", frMotorPower);
         opMode.telemetry.addData("bl power", blMotorPower);
         opMode.telemetry.addData("br power", brMotorPower);
-
-        opMode.telemetry.update();
+*/
     }
 
     private void init() {
