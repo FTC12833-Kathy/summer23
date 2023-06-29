@@ -27,10 +27,16 @@ public class S2_Lift {
         opMode.telemetry.addData("Limit", isTriggered(bottomLimit));
         opMode.telemetry.addData("Encoder Ticks", liftMotor.getCurrentPosition());
 
-        if (opMode.gamepad2.right_trigger > 0.1){ //up
+        if (opMode.gamepad2.right_trigger > 0.1 && liftMotor.getCurrentPosition() < MAX_HEIGHT){ //up
             liftMotor.setPower(LIFT_SPEED);
-        } else if (opMode.gamepad2.left_trigger > 0.1 && !isTriggered(bottomLimit)) { //down
-            liftMotor.setPower(-LIFT_SPEED);
+        } else if (opMode.gamepad2.left_trigger > 0.1) { //down
+            if (!isTriggered(bottomLimit)) {
+                liftMotor.setPower(-LIFT_SPEED);
+            } else {
+                liftMotor.setPower(0);
+                liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            }
         } else {
             liftMotor.setPower(0);
         }
@@ -42,6 +48,7 @@ public class S2_Lift {
 
     private void init() {
         liftMotor = opMode.hardwareMap.get(DcMotor.class, "Lift");
+        liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         pivot = opMode.hardwareMap.get(Servo.class, "Pivot");
