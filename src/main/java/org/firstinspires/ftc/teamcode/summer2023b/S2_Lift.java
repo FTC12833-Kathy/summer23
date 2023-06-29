@@ -12,6 +12,8 @@ public class S2_Lift {
     private DigitalChannel bottomLimit;
 
     final double LIFT_SPEED = 0.3;
+    final double TICKS_PER_REVOLUTION = 383.6;
+    final double MAX_HEIGHT = 2000;
 
     public S2_Lift(LinearOpMode opMode) {
         this.opMode = opMode;
@@ -23,6 +25,7 @@ public class S2_Lift {
 //        code to run lift mechanism
 
         opMode.telemetry.addData("Limit", isTriggered(bottomLimit));
+        opMode.telemetry.addData("Encoder Ticks", liftMotor.getCurrentPosition());
 
         if (opMode.gamepad2.right_trigger > 0.1){ //up
             liftMotor.setPower(LIFT_SPEED);
@@ -39,7 +42,11 @@ public class S2_Lift {
 
     private void init() {
         liftMotor = opMode.hardwareMap.get(DcMotor.class, "Lift");
+        liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         pivot = opMode.hardwareMap.get(Servo.class, "Pivot");
+        pivot.setPosition(1);
+
         bottomLimit = opMode.hardwareMap.get(DigitalChannel.class, "BottomLimit");
     }
 }
