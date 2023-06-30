@@ -11,9 +11,12 @@ public class S2_Lift {
     private Servo pivot = null;
     private DigitalChannel bottomLimit;
 
-    final double LIFT_SPEED = 0.3;
-    final double TICKS_PER_REVOLUTION = 383.6;
+    final double LIFT_SPEED = 1;
+    // final double TICKS_PER_REVOLUTION = 383.6; for 13:7 GoBilda motor
     final double MAX_HEIGHT = 2000;
+    final int LIFT_INCREMENT = 12;
+
+    int targetTicks = 0;
 
     public S2_Lift(LinearOpMode opMode) {
         this.opMode = opMode;
@@ -27,18 +30,26 @@ public class S2_Lift {
         opMode.telemetry.addData("Limit", isTriggered(bottomLimit));
         opMode.telemetry.addData("Encoder Ticks", liftMotor.getCurrentPosition());
 
-        if (opMode.gamepad2.right_trigger > 0.1 && liftMotor.getCurrentPosition() < MAX_HEIGHT){ //up
-            liftMotor.setPower(LIFT_SPEED);
+        if (opMode.gamepad2.right_trigger > 0.1){ //up
+            if (isTriggered(bottomLimit)) {
+                liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            }
+            if (targetTicks + LIFT_INCREMENT < MAX_HEIGHT) {
+                targetTicks += LIFT_INCREMENT;
+                liftMotor.setTargetPosition(targetTicks);
+                liftMotor.setPower(LIFT_SPEED);
+            }
         } else if (opMode.gamepad2.left_trigger > 0.1) { //down
-            if (!isTriggered(bottomLimit)) {
-                liftMotor.setPower(-LIFT_SPEED);
-            } else {
+            if (isTriggered(bottomLimit)) {
                 liftMotor.setPower(0);
+                targetTicks = 0;
                 liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            } else {
+                targetTicks -= LIFT_INCREMENT;
+                liftMotor.setTargetPosition(targetTicks);
+                liftMotor.setPower(LIFT_SPEED);
             }
-        } else {
-            liftMotor.setPower(0);
         }
     }
 
@@ -50,6 +61,7 @@ public class S2_Lift {
         liftMotor = opMode.hardwareMap.get(DcMotor.class, "Lift");
         liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         pivot = opMode.hardwareMap.get(Servo.class, "Pivot");
         pivot.setPosition(1);
