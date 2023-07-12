@@ -18,6 +18,8 @@ public class S2_Lift {
 
     int targetTicks = 0;
 
+    boolean pivotForward = true;
+
     public S2_Lift(LinearOpMode opMode) {
         this.opMode = opMode;
         init();
@@ -29,6 +31,7 @@ public class S2_Lift {
 
         opMode.telemetry.addData("Limit", isTriggered(bottomLimit));
         opMode.telemetry.addData("Encoder Ticks", liftMotor.getCurrentPosition());
+        opMode.telemetry.addData("pivot", pivot.getPosition());
 
         if (opMode.gamepad2.right_trigger > 0.1){ //up
             if (isTriggered(bottomLimit)) {
@@ -51,6 +54,18 @@ public class S2_Lift {
                 liftMotor.setPower(LIFT_SPEED);
             }
         }
+
+        if (!isTriggered(bottomLimit) && opMode.gamepad2.x && pivotForward) {
+            pivotForward = false;
+            pivot.setPosition(0);
+            while (opMode.opModeIsActive() && opMode.gamepad2.x) {
+            }
+        } else if (!isTriggered(bottomLimit) && opMode.gamepad2.x && !pivotForward) {
+            pivotForward = true;
+            pivot.setPosition(1);
+            while (opMode.opModeIsActive() && opMode.gamepad2.x) {
+            }
+        }
     }
 
     public boolean isTriggered(DigitalChannel limit) {
@@ -62,6 +77,7 @@ public class S2_Lift {
         liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        liftMotor.setTargetPosition(0);
 
         pivot = opMode.hardwareMap.get(Servo.class, "Pivot");
         pivot.setPosition(1);

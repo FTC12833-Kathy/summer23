@@ -17,10 +17,10 @@ public class S2_Collector {
 
     public void runCollector() {
 //        code to run collector
-        if(opMode.gamepad2.right_bumper){ //collects
+        if(opMode.gamepad2.left_bumper){ //collects - motors are reversed
             frontCollector.setPower(1);
             backCollector.setPower(1);
-        }else if (opMode.gamepad2.left_bumper){ //spits out
+        }else if (opMode.gamepad2.right_bumper){ //spits out - motors are reversed
             frontCollector.setPower(-1);
             backCollector.setPower(-1);
         }else{
