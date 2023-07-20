@@ -15,10 +15,12 @@ public class S2_Lift {
     // final double TICKS_PER_REVOLUTION = 383.6; for 13:7 GoBilda motor
     final double MAX_HEIGHT = 2000;
     final int LIFT_INCREMENT = 12;
-
+    final int PIVOT_CLEARANCE = 650;
     int targetTicks = 0;
+    int numXPressed = 0;
 
     boolean pivotForward = true;
+    boolean isHandled = false;
 
     public S2_Lift(LinearOpMode opMode) {
         this.opMode = opMode;
@@ -55,17 +57,31 @@ public class S2_Lift {
             }
         }
 
-        if (!isTriggered(bottomLimit) && opMode.gamepad2.x && pivotForward) {
-            pivotForward = false;
-            pivot.setPosition(0);
-            while (opMode.opModeIsActive() && opMode.gamepad2.x) {
+        if (opMode.gamepad2.x && !isHandled){
+            if (pivotForward && liftMotor.getCurrentPosition() >= PIVOT_CLEARANCE){
+                pivot.setPosition(0);
+                pivotForward = false;
+            } else if (liftMotor.getCurrentPosition() >= PIVOT_CLEARANCE){
+                pivot.setPosition(1);
+                pivotForward = true;
             }
-        } else if (!isTriggered(bottomLimit) && opMode.gamepad2.x && !pivotForward) {
-            pivotForward = true;
-            pivot.setPosition(1);
-            while (opMode.opModeIsActive() && opMode.gamepad2.x) {
-            }
+            isHandled = true;
+        } else if (!opMode.gamepad2.x && isHandled){
+            isHandled = false;
         }
+
+        if(opMode.gamepad2.y){
+            liftMotor.setTargetPosition(1942);
+            targetTicks = 1942;
+            pivot.setPosition(0);
+            pivotForward = false;
+        }
+
+
+
+
+
+
     }
 
     public boolean isTriggered(DigitalChannel limit) {
