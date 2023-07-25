@@ -47,7 +47,9 @@ public class S2_Lift {
                 liftMotor.setPower(MANUAL_LIFT_SPEED);
             }
         } else if (opMode.gamepad2.left_trigger > 0.1) { //down
-
+            if (liftMotor.getMode() != DcMotor.RunMode.RUN_TO_POSITION ){
+                liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            }
             if (isTriggered(bottomLimit)) {//stops slide for going too far down
                 liftMotor.setPower(0);
                 targetTicks = 0;
