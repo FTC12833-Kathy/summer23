@@ -17,9 +17,10 @@ public class S2_Robot {
     }
 
     public void init() {
-        drivetrain = new S2_Drivetrain(opMode);
+        //drivetrain = new S2_Drivetrain(opMode);
         lift = new S2_Lift(opMode);
         collector = new S2_Collector(opMode);
+        drivetrain = new S2_Drivetrain(opMode);
     }
 
 }

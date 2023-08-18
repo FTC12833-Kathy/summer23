@@ -46,15 +46,15 @@ public class S2_Lift {
                 liftMotor.setTargetPosition(targetTicks);
                 liftMotor.setPower(MANUAL_LIFT_SPEED);
             }
-        } else if (opMode.gamepad2.left_trigger > 0.1) { //down
-            if (liftMotor.getMode() != DcMotor.RunMode.RUN_TO_POSITION ){
-                liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            }
+        } else if (opMode.gamepad2.left_trigger > 0.1 ) { //down
             if (isTriggered(bottomLimit)) {//stops slide for going too far down
+                opMode.telemetry.addData("yay", "it works!!");
                 liftMotor.setPower(0);
                 targetTicks = 0;
                 liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            } else if (liftMotor.getMode() != DcMotor.RunMode.RUN_TO_POSITION && !isTriggered(bottomLimit)){
+                liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             } else {
                 targetTicks -= LIFT_INCREMENT; // updates slide ticks
                 liftMotor.setTargetPosition(targetTicks);
@@ -64,11 +64,15 @@ public class S2_Lift {
 
         if (opMode.gamepad2.x && !pivotIsHandled){ // pivot
             if (pivotForward && liftMotor.getCurrentPosition() >= PIVOT_CLEARANCE){//pivot an flip too low
-                pivot.setPosition(0);
-                pivotForward = false;
+                for (int i = 1; i > 0; i -= .2){
+                    pivot.setPosition(i);
+                    pivotForward = false;
+                }
             } else if (liftMotor.getCurrentPosition() >= PIVOT_CLEARANCE){
-                pivot.setPosition(1);
-                pivotForward = true;
+                for (int i = 0; i < 1; i += .2){
+                    pivot.setPosition(i);
+                    pivotForward = true;
+                }
             }
             pivotIsHandled = true;
         } else if (!opMode.gamepad2.x && pivotIsHandled){
