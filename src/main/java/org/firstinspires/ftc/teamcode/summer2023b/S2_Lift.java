@@ -64,17 +64,19 @@ public class S2_Lift {
 
         if (opMode.gamepad2.x && !pivotIsHandled){ // pivot
             if (pivotForward && liftMotor.getCurrentPosition() >= PIVOT_CLEARANCE){//pivot an flip too low
-                for (int i = 1; i > 0; i -= .2){
+                for (double i = 1; i > 0; i -= .03){
+
                     pivot.setPosition(i);
+                    opMode.sleep(150);
                     pivotForward = false;
+                    pivotIsHandled = true;
                 }
             } else if (liftMotor.getCurrentPosition() >= PIVOT_CLEARANCE){
-                for (int i = 0; i < 1; i += .2){
-                    pivot.setPosition(i);
+                    pivot.setPosition(1);
                     pivotForward = true;
-                }
+                    pivotIsHandled = true;
             }
-            pivotIsHandled = true;
+
         } else if (!opMode.gamepad2.x && pivotIsHandled){
             pivotIsHandled = false;
         }

@@ -45,8 +45,8 @@ public class S3_BeastOfBurden {
 
         if (opMode.gamepad2.right_trigger > .1) {
 
-            launcher.setPower(1);
-            if(launcher.getVelocity() > 2680){
+            launcher.setVelocity(1340);
+            if(launcher.getVelocity() >= 1340){
                 backWheel.setPower(1);
             }
 
